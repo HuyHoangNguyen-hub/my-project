@@ -1,0 +1,13 @@
+# Bí mật & dữ liệu cục bộ
+.env
+data.db
+# Python / virtualenv
+__pycache__/
+*.pyc
+venv/
+.venv/
+# IDE
+.idea/
+# Banner do admin upload (giữ lại thư mục)
+static/banners/*
+!static/banners/.gitkeep

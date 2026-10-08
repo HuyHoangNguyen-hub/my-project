@@ -1,0 +1,8 @@
+{% macro pwd_field(name, id, label, required=True, placeholder='') %}
+<label>{{ label }}</label>
+<div class="pwd-wrap">
+  <input type="password" name="{{ name }}" id="{{ id }}" {% if required %}required{% endif %}
+    {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}>
+  <button type="button" class="pwd-eye" onclick="togglePwd('{{ id }}', this)" tabindex="-1">👁️</button>
+</div>
+{% endmacro %}

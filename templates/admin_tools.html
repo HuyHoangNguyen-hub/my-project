@@ -1,0 +1,57 @@
+{% extends "base.html" %}{% block t %}Công cụ quản trị{% endblock %}{% block body %}
+<h1>🛠 Công cụ quản trị</h1>
+
+<div class="card">
+  <h2>➕ Tạo sự kiện mới</h2>
+  <form method="post" action="{{ url_for('admin.create_event') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    {% set e = None %}{% include "_eventfields.html" %}
+    <p><button>Tạo sự kiện</button></p>
+  </form>
+</div>
+
+<div class="card scroll">
+  <h2>💳 Xác nhận thanh toán / Duyệt đăng ký
+    {% if pending_payments %}<span class="chip fee">{{ pending_payments|length }} đang chờ</span>{% endif %}</h2>
+  <p class="mut">Với sự kiện có phí: chỉ bấm "Xác nhận" khi đã kiểm tra tài khoản ngân hàng.
+    Với sự kiện miễn phí cần duyệt: bấm "Xác nhận" để duyệt đăng ký. Cả hai trường hợp hệ
+    thống đều tự động gửi vé qua email ngay sau khi bấm.</p>
+  {% if pending_payments %}
+  <table><tr><th>Người đăng ký</th><th>Sự kiện</th><th>Số tiền</th><th>Trạng thái</th><th>Thao tác</th></tr>
+    {% for r in pending_payments %}<tr>
+      <td>{{ r.fullname }}<br><span class="mut">{{ r.email }} · {{ r.phone or '—' }}</span></td>
+      <td>{{ r.title }}</td>
+      <td>{% if r.amount %}{{ r.amount|vnd }}{% else %}Miễn phí{% endif %}</td>
+      <td>{% if r.payment_status=='pending' and r.amount %}<span class="st st-pending">Báo đã CK</span>
+      {% elif r.payment_status=='pending' %}<span class="st st-pending">Chờ duyệt</span>
+      {% else %}<span class="st st-done">Chưa CK</span>{% endif %}</td>
+      <td style="display:flex;gap:6px">
+        <form method="post" action="{{ url_for('admin.confirm_payment', rid=r.id) }}">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="s">Xác nhận</button></form>
+        <form method="post" action="{{ url_for('admin.reject_payment', rid=r.id) }}"
+          onsubmit="return confirm('Từ chối phiếu này?')">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="r s">Từ chối</button></form>
+      </td></tr>{% endfor %}
+  </table>
+  {% else %}<p class="mut">Không có phiếu nào đang chờ.</p>{% endif %}
+</div>
+
+<div class="card scroll">
+  <h2>🗂 Quản lý sự kiện (toàn bộ {{ all_events|length }} sự kiện)</h2>
+  <table><tr><th>Tên</th><th>Trạng thái</th><th>Bắt đầu → Kết thúc</th><th>Đăng ký</th><th></th></tr>
+    {% for e in all_events %}<tr>
+      <td><a class="title" href="{{ url_for('events.event_detail', eid=e.id) }}">{{ e.title }}</a></td>
+      <td>{% if e.phase=='upcoming' %}<span class="st st-confirmed">Sắp diễn ra</span>
+          {% elif e.phase=='ongoing' %}<span class="st st-pending">Đang diễn ra</span>
+          {% else %}<span class="st st-done">Đã kết thúc</span>{% endif %}</td>
+      <td>{{ e|vnrange }}</td>
+      <td><a href="{{ url_for('admin.event_regs', eid=e.id) }}">{{ e.joined }}/{{ e.capacity }} người</a></td>
+      <td style="display:flex;gap:6px">
+        <a href="{{ url_for('admin.edit_event', eid=e.id) }}"><button type="button" class="g s">Sửa</button></a>
+        <form method="post" action="{{ url_for('admin.delete_event', eid=e.id) }}"
+          onsubmit="return confirm('Xoá sự kiện này? Mọi đăng ký liên quan cũng bị xoá.')">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="r s">Xoá</button></form>
+      </td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

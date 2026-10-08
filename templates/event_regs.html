@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block body %}
+<h1>Danh sách người tham gia: {{ e.title }}</h1>
+<p class="mut">🗓 {{ e|vnrange }} &nbsp;•&nbsp; 📍 {{ e.location or 'Đang cập nhật' }}</p>
+<div class="card scroll">
+<p class="mut">Trang này chỉ quản trị viên xem được.</p>
+<table><tr><th>#</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Mã vé</th><th>Số tiền</th>
+<th>Thanh toán</th><th>Ngày ĐK</th><th>Trạng thái</th></tr>
+{% for r in rows %}<tr><td>{{ loop.index }}</td><td>{{ r.fullname }}</td><td>{{ r.email }}</td><td>{{ r.phone or '—' }}</td><td>{{ r.ticket_code or '—' }}</td>
+<td>{% if r.amount %}{{ r.amount|vnd }}{% else %}Miễn phí{% endif %}</td>
+<td>{{ {'free':'Miễn phí','unpaid':'Chưa CK','pending':'Chờ duyệt','paid':'Đã thu','rejected':'Từ chối','cancelled':'Đã huỷ'}.get(r.payment_status, r.payment_status) }}</td>
+<td>{{ r.created_at|vndate }}</td><td>{% if r.status=='cancelled' %}<span class="st st-cancelled">Đã huỷ</span>{% elif r.status=='pending' %}<span class="st st-pending">Chờ TT</span>
+{% else %}<span class="st st-confirmed">Xác nhận</span>{% endif %}</td></tr>{% endfor %}</table>
+{% if not rows %}<p class="mut">Chưa có ai đăng ký.</p>{% endif %}
+<p><a href="{{ url_for('events.index') }}">← Trang chủ</a></p></div>{% endblock %}

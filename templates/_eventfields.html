@@ -1,0 +1,75 @@
+<label>Tên sự kiện *</label><input name="title" value="{{ e.title if e else '' }}" required>
+<label>Mô tả</label><textarea name="description" rows="3">{{ e.description if e else '' }}</textarea>
+<label>Ban tổ chức</label>
+<input name="organizer" value="{{ e.organizer if e else '' }}" maxlength="120"
+  placeholder="Để trống sẽ dùng tên mặc định: {{ DEFAULT_ORG_NAME }}">
+<div class="filters">
+ <div><label>Ngày bắt đầu * (ngày/tháng/năm)</label>
+  <div class="date-vn-group" data-target="start_date_h">
+    <input type="text" inputmode="numeric" class="dpart-dd" placeholder="dd" maxlength="2"
+      value="{{ e.start_at[8:10] if e and e.start_at else '' }}">
+    <span class="dsep">/</span>
+    <input type="text" inputmode="numeric" class="dpart-mm" placeholder="mm" maxlength="2"
+      value="{{ e.start_at[5:7] if e and e.start_at else '' }}">
+    <span class="dsep">/</span>
+    <input type="text" inputmode="numeric" class="dpart-yyyy" placeholder="yyyy" maxlength="4"
+      value="{{ e.start_at[0:4] if e and e.start_at else '' }}">
+  </div>
+  <input type="hidden" name="start_date" id="start_date_h" value="{{ e.start_at[:10] if e and e.start_at else '' }}"></div>
+ <div><label>Giờ bắt đầu *</label>
+  <input name="start_time" type="time" value="{{ e.start_at[11:16] if e else '' }}" required></div>
+ <div><label>Ngày kết thúc * (ngày/tháng/năm)</label>
+  <div class="date-vn-group" data-target="end_date_h">
+    <input type="text" inputmode="numeric" class="dpart-dd" placeholder="dd" maxlength="2"
+      value="{{ e.end_at[8:10] if e and e.end_at else '' }}">
+    <span class="dsep">/</span>
+    <input type="text" inputmode="numeric" class="dpart-mm" placeholder="mm" maxlength="2"
+      value="{{ e.end_at[5:7] if e and e.end_at else '' }}">
+    <span class="dsep">/</span>
+    <input type="text" inputmode="numeric" class="dpart-yyyy" placeholder="yyyy" maxlength="4"
+      value="{{ e.end_at[0:4] if e and e.end_at else '' }}">
+  </div>
+  <input type="hidden" name="end_date" id="end_date_h" value="{{ e.end_at[:10] if e and e.end_at else '' }}"></div>
+ <div><label>Giờ kết thúc *</label>
+  <input name="end_time" type="time" value="{{ e.end_at[11:16] if e else '' }}" required></div>
+</div>
+<div class="filters" style="margin-top:10px">
+ <div><label>Địa điểm</label><input name="location" value="{{ e.location if e else '' }}"></div>
+ <div><label>Loại sự kiện</label><select name="category">
+  {% for c in CATEGORIES %}<option value="{{c}}" {{ 'selected' if e and e.category==c }}>{{c}}</option>{% endfor %}
+ </select></div>
+ <div><label>Sức chứa</label>
+  <input name="capacity" type="number" min="1" value="{{ e.capacity if e else 100 }}"></div>
+</div>
+<div class="filters" style="margin-top:10px">
+ <div><label>Hình thức</label><select name="is_paid" id="isPaid">
+  <option value="0" {{ 'selected' if e and not e.is_paid }}>Miễn phí</option>
+  <option value="1" {{ 'selected' if e and e.is_paid }}>Có phí</option></select></div>
+ <div><label>Mức phí (VNĐ)</label>
+  <input name="fee" id="fee" type="number" min="0" step="1000" value="{{ e.fee if e else 0 }}"></div>
+ <div><label>Duyệt đăng ký</label>
+  <input type="text" id="approvalInfo" disabled
+    value="{{ 'Bắt buộc (sự kiện có phí)' if e and e.is_paid else 'Không áp dụng (miễn phí = tự động xác nhận)' }}">
+  <input type="hidden" name="needs_approval" id="needsApproval" value="{{ 1 if e and e.is_paid else 0 }}"></div>
+</div>
+<p class="mut" style="margin-top:-6px">Sự kiện <b>có phí</b> luôn cần admin duyệt (để xác nhận đã nhận tiền).
+  Sự kiện <b>miễn phí</b> luôn tự động xác nhận ngay, không qua duyệt.</p>
+<script>
+(function () {
+  var isPaid = document.getElementById('isPaid');
+  var info = document.getElementById('approvalInfo');
+  var hidden = document.getElementById('needsApproval');
+  function sync() {
+    var paid = isPaid.value === '1';
+    hidden.value = paid ? '1' : '0';
+    info.value = paid ? 'Bắt buộc (sự kiện có phí)' : 'Không áp dụng (miễn phí = tự động xác nhận)';
+  }
+  isPaid.addEventListener('change', sync);
+  sync();
+})();
+</script>
+<label>Banner sự kiện (png/jpg/webp)</label><input type="file" name="banner" accept="image/*">
+{% if e and e.banner %}
+ <p><img src="{{ url_for('static', filename='banners/' ~ e.banner) }}" style="max-width:260px;border-radius:8px">
+ <br><label style="display:inline"><input type="checkbox" name="remove_banner" value="1" style="width:auto"> Xoá banner hiện tại</label></p>
+{% endif %}

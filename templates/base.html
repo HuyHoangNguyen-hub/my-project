@@ -1,0 +1,227 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block t %}EventGo — Đăng ký sự kiện{% endblock %}</title>
+{% block head_extra %}{% endblock %}
+<style>
+:root{
+  --bg:#ffffff; --bg2:#f5f6fa; --card:#ffffff; --ink:#1a1b23; --mut:#6b7280;
+  --line:#e3e5ee; --pri:#6d5bd0; --pri2:#8b5cf6; --pri-ink:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.55 system-ui,"Segoe UI",Arial;background:var(--bg);color:var(--ink)}
+a{color:inherit}
+header{background:var(--bg2);border-bottom:1px solid var(--line);padding:14px 24px;
+  display:flex;gap:22px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;text-decoration:none;color:var(--ink)}
+header nav{display:flex;gap:18px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--mut);font-weight:600;font-size:14px}
+header nav a:hover,header nav a.on{color:var(--ink)}
+header .sp{margin-left:auto}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:8px;
+  padding:8px 16px;font-weight:600;text-decoration:none;font-size:14px}
+.btn-solid{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border:0;border-radius:8px;
+  padding:9px 18px;font-weight:700;text-decoration:none;font-size:14px}
+.profile-chip{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);
+  border-radius:30px;padding:5px 14px 5px 5px;text-decoration:none;color:var(--ink)}
+.profile-chip:hover{border-color:var(--pri)}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--pri),var(--pri2));
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;flex:none}
+.avatar{overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.pname{font-size:14px;font-weight:600}
+.prole{font-size:11px;color:var(--mut);display:block;margin-top:-2px}
+.badge{background:#3a2f6b;color:#c9bcff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700}
+.wrap{max-width:1080px;margin:26px auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+h1{font-size:22px;margin:0 0 14px}h2{font-size:17px;margin:0 0 12px}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input,textarea,select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;
+  font:inherit;background:var(--bg2);color:var(--ink)}
+input::placeholder{color:var(--mut)}
+button{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.g{background:#3a3f52}button.r{background:#c0392b}button.s{padding:5px 10px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mut);font-size:12px;text-transform:uppercase}
+.msg{padding:10px 14px;border-radius:8px;margin-bottom:12px}
+.ok{background:#123424;color:#7ee2ac}.error{background:#3a1a1a;color:#ff9b9b}
+.field-error{color:#c0392b;font-size:13px;font-weight:600;margin:-4px 0 10px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.mut{color:var(--mut);font-size:13px}
+.chip{display:inline-block;background:#232a4a;color:#b9c3ff;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
+.st{border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700}
+.st-confirmed{background:#123424;color:#7ee2ac}.st-cancelled{background:#3a1a1a;color:#ff9b9b}
+.st-done{background:#232633;color:var(--mut)}.st-pending{background:#3a2f10;color:#f0c264}
+.banner{width:100%;max-height:260px;object-fit:cover;border-radius:10px;margin-bottom:12px}
+.fee{font-weight:700;color:#ff8a8a}.free{font-weight:700;color:#7ee2ac}
+.filters{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));align-items:end}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tabs a{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 14px;
+  text-decoration:none;color:var(--ink);font-size:14px}
+.tabs a.on{background:linear-gradient(135deg,var(--pri),var(--pri2));border-color:transparent}
+a.title{color:var(--ink);text-decoration:none}a.title:hover{color:#b9c3ff}
+.scroll{overflow-x:auto}
+/* ---- Trang chủ: hero + lưới sự kiện ---- */
+.hero{background:linear-gradient(135deg,var(--pri) 0%,var(--pri2) 100%);border-radius:18px;
+  padding:44px 28px;text-align:center;margin-bottom:28px}
+.hero h1{font-size:30px;color:#fff;margin:0 0 8px}
+.hero-sub{color:#e7e2ff;margin:0 0 24px;font-size:15px}
+.hero-search{display:flex;flex-wrap:wrap;gap:10px;background:rgba(255,255,255,.12);padding:12px;
+  border-radius:14px;max-width:900px;margin:0 auto}
+.hero-search input,.hero-search select{flex:1 1 140px;min-width:120px;background:#fff;color:#1a1b23;
+  border:0;border-radius:8px;padding:10px 12px}
+/* Ô ngày dd/mm/yyyy trong thanh tìm kiếm: ghi đè min-width/flex của ".hero-search input"
+   để 3 ô ngày/tháng/năm hiển thị ĐẦY ĐỦ, không bị cắt chữ "yyyy" */
+.hero-search .date-vn-group{flex:0 0 220px;min-width:220px}
+.hero-search .date-vn-group input{flex:none;min-width:0;width:auto;background:transparent;
+  color:#1a1b23;border-radius:0;padding:10px 2px}
+.hero-search .date-vn-group .dpart-dd,.hero-search .date-vn-group .dpart-mm{flex:0 0 40px;width:40px}
+.hero-search .date-vn-group .dpart-yyyy{flex:1 1 70px;width:70px}
+.hero-search .date-vn-group .dsep{color:#6b7280}
+.hero-search button{background:#fff;color:var(--pri);font-weight:700;padding:10px 22px;border-radius:8px;
+  white-space:nowrap;flex:none}
+.hero-search button:hover{background:#f0eeff}
+.hero-clear{display:inline-block;margin-top:12px;color:#e7e2ff;font-size:13px;text-decoration:underline}
+.section-title{display:flex;align-items:center;gap:8px;font-size:19px;margin:6px 0 16px}
+.section-title .bar{width:4px;height:20px;background:linear-gradient(var(--pri),var(--pri2));border-radius:2px}
+.events-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.event-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  display:flex;flex-direction:column}
+.event-card .thumb{height:220px;display:flex;align-items:center;justify-content:center;font-size:48px}
+.event-card .thumb img{width:100%;height:100%;object-fit:cover}
+.g1{background:linear-gradient(135deg,#ff9a76,#ff6a88)}
+.g2{background:linear-gradient(135deg,#7f7fd5,#86a8e7)}
+.g3{background:linear-gradient(135deg,#f6d365,#fda085)}
+.g4{background:linear-gradient(135deg,#43cea2,#185a9d)}
+.g5{background:linear-gradient(135deg,#a18cd1,#fbc2eb)}
+.event-card .body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.event-card .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.event-card .foot{margin-top:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* ---- Ô mật khẩu có nút con mắt xem/ẩn ---- */
+.pwd-wrap{position:relative}
+.pwd-wrap input{padding-right:42px}
+.pwd-eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:transparent;
+  border:0;color:var(--mut);font-size:17px;padding:6px;cursor:pointer;line-height:1}
+.pwd-eye:hover{color:var(--ink)}
+/* ---- Nút quay lại trang trước ---- */
+.btn-back{background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:8px;
+  padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-back:hover{color:var(--ink);border-color:var(--pri)}
+/* ---- Mã OTP 4 số ---- */
+.otp-input{letter-spacing:14px;font-size:26px;text-align:center;font-weight:700}
+/* ---- Nhóm 3 ô ngày/tháng/năm, trông liền khối như 1 ô ngày duy nhất ---- */
+.date-vn-group{display:flex;align-items:center;gap:0;border:1px solid var(--line);
+  border-radius:8px;background:var(--bg2);overflow:hidden}
+.date-vn-group input{border:0!important;background:transparent!important;text-align:center;
+  padding:9px 2px!important;border-radius:0!important;width:100%}
+.date-vn-group input:focus{outline:none;background:rgba(109,91,208,.12)!important}
+.date-vn-group .dpart-dd,.date-vn-group .dpart-mm{flex:0 0 34px}
+.date-vn-group .dpart-yyyy{flex:1 1 52px}
+.date-vn-group .dsep{color:var(--mut);padding:0 2px;flex:none}
+.date-vn-wrap{display:flex;align-items:center;gap:6px;position:relative}
+.date-vn-wrap .date-vn-group{flex:1}
+.date-pick-btn{flex:none;background:transparent;border:1px solid var(--line);border-radius:8px;
+  padding:8px 10px;font-size:16px;line-height:1;cursor:pointer;color:var(--ink)}
+.date-pick-btn:hover{border-color:var(--pri);background:var(--bg2)}
+.date-vn-native{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:0;top:0}
+</style></head><body>
+<script>
+function togglePwd(id, btn){
+  var el = document.getElementById(id);
+  if(el.type === 'password'){ el.type = 'text'; btn.textContent = '🙈'; }
+  else { el.type = 'password'; btn.textContent = '👁️'; }
+}
+/* Ô ngày dd/mm/yyyy: 3 ô số riêng (ngày/tháng/năm), tự nhảy sang ô kế khi gõ đủ số,
+   đồng bộ sang ô ẩn giá trị ISO (yyyy-mm-dd) để form gửi lên server không đổi ->
+   cố định thứ tự ngày/tháng/năm, không phụ thuộc locale trình duyệt/hệ điều hành. */
+function initDateVN(scope){
+  (scope || document).querySelectorAll('.date-vn-group').forEach(function(grp){
+    if (grp.dataset.vnInit) return;
+    grp.dataset.vnInit = '1';
+    var hidden = document.getElementById(grp.dataset.target);
+    var dd = grp.querySelector('.dpart-dd');
+    var mm = grp.querySelector('.dpart-mm');
+    var yyyy = grp.querySelector('.dpart-yyyy');
+    var wrap = grp.closest('.date-vn-wrap');
+    var nativeInp = wrap ? wrap.querySelector('.date-vn-native') : null;
+    var pickBtn = wrap ? wrap.querySelector('.date-pick-btn') : null;
+    function sync(){
+      if (!hidden) return;
+      if (dd.value.length && mm.value.length && yyyy.value.length === 4) {
+        var iso = yyyy.value + '-' + mm.value.padStart(2, '0') + '-' + dd.value.padStart(2, '0');
+        hidden.value = iso;
+        if (nativeInp) nativeInp.value = iso;
+      } else {
+        hidden.value = '';
+      }
+    }
+    var parts = [[dd, 2, mm, null], [mm, 2, yyyy, dd], [yyyy, 4, null, mm]];
+    parts.forEach(function(cfg){
+      var el = cfg[0], max = cfg[1], next = cfg[2], prev = cfg[3];
+      el.addEventListener('input', function(){
+        el.value = el.value.replace(/\D/g, '').slice(0, max);
+        if (el.value.length === max && next) next.focus();
+        sync();
+      });
+      el.addEventListener('keydown', function(ev){
+        if (ev.key === 'Backspace' && !el.value && prev) prev.focus();
+      });
+      el.addEventListener('blur', sync);
+    });
+    // Nút 📅 mở lịch chọn ngày gốc của trình duyệt -> chọn xong tự điền vào 3 ô dd/mm/yyyy
+    if (pickBtn && nativeInp) {
+      pickBtn.addEventListener('click', function(){
+        try { nativeInp.showPicker(); }
+        catch (err) { nativeInp.focus(); nativeInp.click(); }
+      });
+      nativeInp.addEventListener('change', function(){
+        if (!nativeInp.value) return;
+        var p = nativeInp.value.split('-');
+        yyyy.value = p[0]; mm.value = p[1]; dd.value = p[2];
+        sync();
+      });
+    }
+    sync();
+  });
+}
+/* Tự động ẩn dần các thông báo thành công (màu xanh, vd "Bạn đã đăng xuất.")
+   sau 3 giây. Thông báo lỗi (màu đỏ) KHÔNG tự ẩn để người dùng kịp đọc. */
+function autoDismissFlash(){
+  document.querySelectorAll('.msg.ok').forEach(function(el){
+    setTimeout(function(){
+      el.style.overflow = 'hidden';
+      el.style.transition = 'opacity .4s ease, max-height .4s ease, margin .4s ease, padding .4s ease';
+      el.style.maxHeight = el.offsetHeight + 'px';
+      requestAnimationFrame(function(){
+        el.style.opacity = '0';
+        el.style.maxHeight = '0';
+        el.style.marginBottom = '0';
+        el.style.paddingTop = '0';
+        el.style.paddingBottom = '0';
+      });
+      setTimeout(function(){ el.remove(); }, 450);
+    }, 3000);
+  });
+}
+document.addEventListener('DOMContentLoaded', function(){ initDateVN(); autoDismissFlash(); });
+</script>
+<header>
+  <a class="logo" href="{{ url_for('events.index') }}">🎫 EventGo</a>
+  {% if current_user %}
+  <nav>
+    <a href="{{ url_for('events.index') }}">Trang chủ</a>
+    <a href="{{ url_for('events.index') }}#search">Tìm kiếm sự kiện</a>
+    <a href="{{ url_for('profile.my') }}">Sự kiện của tôi</a>
+    {% if current_user.role=='admin' %}<a href="{{ url_for('admin.admin') }}">🛠 Công cụ quản trị</a>{% endif %}
+  </nav>
+  <span class="sp"></span>
+  <a class="profile-chip" href="{{ url_for('profile.profile') }}">
+    <span class="avatar">{% if current_user.avatar %}<img src="{{ url_for('static', filename='avatars/' ~ current_user.avatar) }}" alt="">{% else %}{{ current_user.fullname[0]|upper }}{% endif %}</span>
+    <span><span class="pname">{{ current_user.fullname }}</span>
+      <span class="prole">{{ 'Quản trị viên' if current_user.role=='admin' else 'Thành viên' }}</span></span>
+  </a>
+  {% endif %}
+</header>
+<div class="wrap">
+  {% for c,m in get_flashed_messages(with_categories=true) %}{% if 'đăng nhập để tiếp tục' not in m %}<div class="msg {{c}}">{{m}}</div>{% endif %}{% endfor %}
+  {% block body %}{% endblock %}
+</div></body></html>

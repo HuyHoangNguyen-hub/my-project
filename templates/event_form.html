@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block t %}Sửa sự kiện{% endblock %}{% block body %}
+<p class="mut"><a href="{{ url_for('events.index') }}">← Trang chủ</a></p>
+<div class="card" style="max-width:640px"><h1>Sửa sự kiện</h1>
+<form method="post" enctype="multipart/form-data">
+<input type="hidden" name="csrf" value="{{ csrf_token() }}">
+{% include "_eventfields.html" %}
+<p class="mut">Đã có {{ e.joined }} người đăng ký — sức chứa không thể đặt thấp hơn số này.</p>
+<p><button>Lưu thay đổi</button>
+   <a href="{{ url_for('events.index') }}"><button type="button" class="g">Huỷ</button></a></p>
+</form></div>{% endblock %}
